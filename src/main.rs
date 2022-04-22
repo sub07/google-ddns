@@ -40,17 +40,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Using interval : {} minutes", minutes_interval);
 
+    let mut last_ip: Option<String> = None;
+
     loop {
         let client = reqwest::blocking::Client::builder()
             .tcp_keepalive(Duration::from_secs(10))
             .timeout(Duration::from_secs(5))
             .user_agent("GoogleDDNS/0.1.0")
             .build()?;
-        if let Ok(ip) = fetch_ip(&client) {
-            let encoded = base64::encode(format!("{}:{}", username, password));
-            match post_ddns(&client, &encoded, &host, &ip) {
-                Ok(res) => info!("{}", res),
-                Err(e) => error!("{}", e),
+        if let Ok(ip) = &fetch_ip(&client) {
+            let do_post_ddns = if let Some(last_ip) = last_ip.as_ref() {
+                if ip.eq(last_ip) {
+                    info!("Same ip, don't request: {}", ip);
+                    false
+                } else {
+                    true
+                }
+            } else {
+                last_ip = Some(ip.clone());
+                true
+            };
+            if do_post_ddns {
+                let encoded = base64::encode(format!("{}:{}", username, password));
+                match post_ddns(&client, &encoded, &host, &ip) {
+                    Ok(res) => info!("{}", res),
+                    Err(e) => error!("{}", e),
+                }
             }
         }
         thread::sleep(Duration::from_secs(minutes_interval * 60))
