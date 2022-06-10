@@ -1,11 +1,12 @@
 use std::thread;
 use std::time::Duration;
+
 use log::{error, info, warn};
 use reqwest::blocking::Client;
 use reqwest::Error;
 
 fn fetch_ip(client: &Client) -> Result<String, Error> {
-    let r = client.get("https://domains.google.com/checkip").send()?.text()?;
+    let r = client.get("https://api.my-ip.io/ip").send()?.text()?;
     Ok(r)
 }
 
@@ -17,7 +18,36 @@ fn post_ddns(client: &Client, auth: &str, host: &str, ip: &str) -> Result<String
         .text()
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn do_work(last_ip: &mut Option<String>, username: &str, password: &str, host: &str) -> Result<(), Error> {
+    let client = Client::builder()
+        .tcp_keepalive(Duration::from_secs(10))
+        .timeout(Duration::from_secs(5))
+        .user_agent("GoogleDDNS/0.1.0")
+        .build()?;
+    if let Ok(ip) = &fetch_ip(&client) {
+        let do_post_ddns = if let Some(last_ip) = last_ip.as_ref() {
+            if ip.eq(last_ip) {
+                info!("Same ip, don't request: {}", ip);
+                false
+            } else {
+                true
+            }
+        } else {
+            *last_ip = Some(ip.clone());
+            true
+        };
+        if do_post_ddns {
+            let encoded = base64::encode(format!("{}:{}", username, password));
+            match post_ddns(&client, &encoded, &host, &ip) {
+                Ok(res) => info!("{}", res),
+                Err(e) => error!("{}", e),
+            }
+        }
+    }
+    Ok(())
+}
+
+fn main() {
     if let Err(_e) = std::env::var("RUST_LOG") {
         std::env::set_var("RUST_LOG", "info");
     }
@@ -43,31 +73,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut last_ip: Option<String> = None;
 
     loop {
-        let client = reqwest::blocking::Client::builder()
-            .tcp_keepalive(Duration::from_secs(10))
-            .timeout(Duration::from_secs(5))
-            .user_agent("GoogleDDNS/0.1.0")
-            .build()?;
-        if let Ok(ip) = &fetch_ip(&client) {
-            let do_post_ddns = if let Some(last_ip) = last_ip.as_ref() {
-                if ip.eq(last_ip) {
-                    info!("Same ip, don't request: {}", ip);
-                    false
-                } else {
-                    true
-                }
-            } else {
-                last_ip = Some(ip.clone());
-                true
-            };
-            if do_post_ddns {
-                let encoded = base64::encode(format!("{}:{}", username, password));
-                match post_ddns(&client, &encoded, &host, &ip) {
-                    Ok(res) => info!("{}", res),
-                    Err(e) => error!("{}", e),
-                }
-            }
+        if let Err(e) = do_work(&mut last_ip, &username, &password, &host) {
+            error!("{}", e);
         }
-        thread::sleep(Duration::from_secs(minutes_interval * 60))
+        thread::sleep(Duration::from_secs(minutes_interval * 60));
     }
 }
