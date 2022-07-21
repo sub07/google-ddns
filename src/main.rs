@@ -6,7 +6,7 @@ use reqwest::blocking::Client;
 use reqwest::Error;
 
 fn fetch_ip(client: &Client) -> Result<String, Error> {
-    let r = client.get("https://api.my-ip.io/ip").send()?.text()?;
+    let r = client.get("https://domains.google.com/checkip").send()?.text()?;
     Ok(r)
 }
 
