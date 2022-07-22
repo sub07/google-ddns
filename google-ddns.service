@@ -7,7 +7,7 @@ Type=simple
 User=mpardo
 PermissionsStartOnly=true
 WorkingDirectory=/home/mpardo/google-ddns/
-Environment="DDNS_USERNAME=<...> DDNS_PASSWORD=<...> DDNS_HOST=mpardo.dev DDNS_MINUTES_INTERVAL=240"
+Environment="DDNS_USERNAME=<...>" "DDNS_PASSWORD=<...>" "DDNS_HOST=mpardo.dev" "DDNS_MINUTES_INTERVAL=240"
 ExecStart=/home/mpardo/.cargo/bin/cargo run --release
 Restart=always
 RestartSec=1
