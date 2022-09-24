@@ -47,7 +47,7 @@ struct Context {
 }
 
 fn fetch_ip(context: &Context) -> Result<String> {
-    context.client.get("https://domains.google.com/checkip")
+    context.client.get("https://api.ipify.org?format=text")
         .send().map_err(|e| Error::FetchIp(e))?
         .text()
         .map_err(|e| Error::FetchIp(e))
