@@ -8,5 +8,27 @@ cargo build --release
 
 ## Systemd Service Setup
 
-1. Fill data in `google-ddns.service`
-2. Copy `google-ddns.service` into `$USER/.config/systemd/user`
+```shell
+systemctl --user --global enable
+```
+
+```shell
+mkdir -p ~/.config/systemd/user/
+```
+
+```shell
+cp google-ddns.service.template ~/.config/systemd/user/google-ddns.service
+```
+
+```shell
+nano ~/.config/systemd/user/google-ddns.service
+```
+
+```shell
+sysu start google-ddns.service
+```
+
+```shell
+sysu enable google-ddns.service
+```
+
