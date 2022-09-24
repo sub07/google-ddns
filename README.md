@@ -9,10 +9,6 @@ cargo build --release
 ## Systemd Service Setup
 
 ```shell
-systemctl --user --global enable
-```
-
-```shell
 mkdir -p ~/.config/systemd/user/
 ```
 
