@@ -10,7 +10,7 @@ services:
       - DDNS_USERNAME=<...>
       - DDNS_PASSWORD=<...>
       - DDNS_HOST=mpardo.dev
-      - DDNS_MINUTES_INTERVAL=1
+      - DDNS_MINUTES_INTERVAL=120
     container_name: google-ddns
     volumes:
       - "./:/google-ddns"
