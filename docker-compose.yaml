@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        APP_NAME: google-ddns
+    environment:
+      - DDNS_USERNAME=<...>
+      - DDNS_PASSWORD=<...>
+      - DDNS_HOST=mpardo.dev
+      - DDNS_MINUTES_INTERVAL=1
+    container_name: google-ddns
+    volumes:
+      - "./:/google-ddns"
