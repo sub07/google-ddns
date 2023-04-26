@@ -1,6 +1,5 @@
 FROM rust:latest
 
-ARG APP_NAME
-WORKDIR "/$APP_NAME"
+WORKDIR "/app"
 
 ENTRYPOINT ["cargo", "run", "--release"]
