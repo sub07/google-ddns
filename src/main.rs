@@ -50,18 +50,18 @@ struct Context {
 
 fn fetch_ip(context: &Context) -> Result<String> {
     context.client.get("https://api.ipify.org?format=text")
-        .send().map_err(|e| Error::FetchIp(e))?
+        .send().map_err(Error::FetchIp)?
         .text()
-        .map_err(|e| Error::FetchIp(e))
+        .map_err(Error::FetchIp)
 }
 
 fn post_ddns(context: &Context, ip: &str) -> Result<String> {
     context.client.post(format!("https://domains.google.com/nic/update?hostname={}&myip={}", context.data.host, ip))
         .header("Authorization", format!("Basic {}", context.data.auth))
         .header("Content-length", 0)
-        .send().map_err(|e| Error::FetchIp(e))?
+        .send().map_err(Error::FetchIp)?
         .text()
-        .map_err(|e| Error::PostIp(e))
+        .map_err(Error::PostIp)
 }
 
 fn do_loop(context: &Context) {
