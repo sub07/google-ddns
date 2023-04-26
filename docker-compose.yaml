@@ -14,3 +14,4 @@ services:
     container_name: google-ddns
     volumes:
       - "./:/google-ddns"
+      - "/etc/localtime:/etc/localtime"
