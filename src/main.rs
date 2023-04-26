@@ -1,5 +1,7 @@
 use std::fmt::{Display, Formatter};
 use std::time::Duration;
+use base64::Engine;
+use base64::engine::general_purpose;
 
 use log::{error, info, warn};
 use reqwest::blocking::Client;
@@ -96,14 +98,14 @@ fn setup_logger() {
     if let Err(_e) = std::env::var("RUST_LOG") {
         std::env::set_var("RUST_LOG", "info");
     }
-    pretty_env_logger::init();
+    log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
 }
 
 fn get_context() -> Context {
     let username = std::env::var("DDNS_USERNAME").expect("DDNS_USERNAME env variable is not set");
     let password = std::env::var("DDNS_PASSWORD").expect("DDNS_PASSWORD env variable is not set");
 
-    let auth = base64::encode(format!("{}:{}", username, password));
+    let auth = general_purpose::STANDARD.encode(format!("{}:{}", username, password));
 
     let host = std::env::var("DDNS_HOST").expect("DDNS_HOST env variable is not set");
 
