@@ -2,7 +2,10 @@ version: '3.9'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      args:
+        APP_NAME: google-ddns
     environment:
       - DDNS_USERNAME=test
       - DDNS_PASSWORD=test
@@ -10,4 +13,5 @@ services:
       - DDNS_MINUTES_INTERVAL=120
     container_name: google-ddns
     volumes:
+      - "./log4rs.yaml:/etc/google-ddns/log4rs.yaml"
       - "/etc/localtime:/etc/localtime"
