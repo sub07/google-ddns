@@ -4,11 +4,10 @@ services:
   app:
     build: .
     environment:
-      - DDNS_USERNAME=<...>
-      - DDNS_PASSWORD=<...>
-      - DDNS_HOST=mpardo.dev
+      - DDNS_USERNAME=test
+      - DDNS_PASSWORD=test
+      - DDNS_HOST=test.dev
       - DDNS_MINUTES_INTERVAL=120
     container_name: google-ddns
     volumes:
-      - "./:/app"
       - "/etc/localtime:/etc/localtime"
