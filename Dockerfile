@@ -1,6 +1,6 @@
 FROM rust:latest as builder
 WORKDIR /app
-COPY Cargo.lock Cargo.toml ./
+COPY Cargo.toml ./
 COPY src ./src
 RUN cargo install --path .
 
